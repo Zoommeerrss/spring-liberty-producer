@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<server description="dummyServer">
+
+    <!-- Enable features -->
+    <featureManager>
+        <feature>springBoot-3.0</feature>
+        <feature>servlet-6.0</feature>
+    </featureManager>
+
+    <!-- To access this server from a remote client add a host attribute to the following element, e.g. host="*" -->
+    <httpEndpoint id="defaultHttpEndpoint"
+                  httpPort="9080"
+                  httpsPort="9443" />
+
+    <httpSession idLength="36" />
+
+    <quickStartSecurity userName="admin" userPassword="System21" />
+
+    <!-- Default SSL configuration enables trust for default certificates from the Java runtime --> 
+    <ssl id="defaultSSLConfig" trustDefaultCerts="true" />
+
+    <logging consoleLogLevel="INFO" />
+
+    <!-- WARNING: pay attention when defining the location. Then location name HAVE TO starts with thin-blablabla.war -->
+    <!-- If the thin-blablabla.war raises a message like "file is not an executable archive" just go to maven and execute clean and install commands -->
+    <springBootApplication id="spring-liberty-producer" location="thin-spring-liberty-producer-0.0.1-SNAPSHOT.war" name="spring-liberty-producer" >
+        <applicationArgument>--server.servlet.context-path=/</applicationArgument>
+        <applicationArgument>--LOGGER_JSON_FORMAT=false</applicationArgument>
+    </springBootApplication>
+
+</server>

@@ -1,0 +1,55 @@
+<configuration>
+
+    <if condition='property("LOGGER_JSON_FORMAT").equals("true")'>
+        <then>
+            <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+                <encoder name="STDOUT" class="net.logstash.logback.encoder.LogstashEncoder">
+                    <!--<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
+                    <pattern><![CDATA[%date{HH:mm:ss.SSS} [%thread] %-5level %logger{15}#%line %X{req.requestURI} traceId: %X{trace_id} spanId: %X{span_id} %msg\n]]></pattern>
+                    <includeCallerData>true</includeCallerData>
+                    <jsonGeneratorDecorator class="net.logstash.logback.decorate.CompositeJsonGeneratorDecorator">
+                        <decorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
+                        <decorator class="net.logstash.logback.mask.MaskingJsonGeneratorDecorator">
+                            <defaultMask>XXXX</defaultMask>
+                            <path>password</path>
+                            <value>\"(\w*(?i)card\w*)\"\s*:\s*\"([^\"]*)\"</value><!-- Any property with the word card -->
+                            <value>\"(\w*(?i)address\w*)\"\s*:\s*\"([^\"]*)\"</value>
+                            <value>\"(\w*(?i)email\w*)\"\s*:\s*\"([^\"]*)\"</value>
+                            <value>\"(\w*(?i)password\w*)\"\s*:\s*\"([^\"]*)\"</value>
+                            <value>\"(\w*(?i)token\w*)\"\s*:\s*\"([^\"]*)\"</value>
+                            <value>\"(\w*(?i)phone\w*)\"\s*:\s*\"([^\"]*)\"</value>
+                            <value>\"(\w*(?i)passport\w*)\"\s*:\s*\"([^\"]*)\"</value>
+                            <value>\"(\w*(?i)expiryDate\w*)\"\s*:\s*\"([^\"]*)\"</value>
+                            <value>\"(\w*(?i)cvv\w*)\"\s*:\s*\"([^\"]*)\"</value>
+                            <value>\"(\w*(?i)security\w*)\"\s*:\s*\"([^\"]*)\"</value>
+                            <value>\"(\w*(?i)txnFlow\w*)\"\s*:\s*\"([^\"]*)\"</value>
+                            <value>\"(\w*(?i)cvc\w*)\"\s*:\s*\"([^\"]*)\"</value>
+                            <value>\"(\w*(?i)cvv\w*)\"\s*:\s*\"([^\"]*)\"</value>
+                            <value>\"(\w*(?i)firstName\w*)\"\s*:\s*\"([^\"]*)\"</value>
+                            <value>\"(\w*(?i)lastName\w*)\"\s*:\s*\"([^\"]*)\"</value>
+                            <value>(\d+\.\d+\.\d+\.\d+)</value> <!-- Ip address IPv4-->
+                            <value>(\w+@\w+\.\w+)</value> <!-- Email pattern -->
+                        </decorator>
+                    </jsonGeneratorDecorator>
+                </encoder>
+            </appender>
+        </then>
+        <else>
+            <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+                <!-- encoders are assigned the type
+                     ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+                <encoder>
+                    <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} -%kvp- %msg%n</pattern>
+                </encoder>
+            </appender>
+        </else>
+    </if>
+
+    <appender name="OTEL" class="io.opentelemetry.instrumentation.logback.v1_0.OpenTelemetryAppender">
+        <appender-ref ref="STDOUT" />
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>

@@ -1,0 +1,5 @@
+# Set the maximum heap size to 1024m.
+-Xmx1024m
+
+# Set a system property.
+-Dcom.ibm.example.system.property=LOGGER_JSON_FORMAT
